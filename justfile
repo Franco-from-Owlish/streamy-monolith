@@ -3,10 +3,14 @@ set shell := ["bash", "-c"]
 set dotenv-filename := "env/dev.env"
 
 DOCKER_COMPOSE := "docker compose --env-file env/dev.env --env-file env/docker.env"
+GRADLEW := "./gradlew"
 
 # Show all recipes in an unsorted list
 default:
     @just --list --unsorted
+
+run *ARGS:
+    {{GRADLEW}} {{ARGS}}
 
 # Docker compose: Start all services
 start:
@@ -22,16 +26,16 @@ stop:
 ## Migrations: Run migrations
 #migrate:
 #    {{DJANGO}} migrate
-#
-## Tests: Run pytest
-#test +ARGS:
-#    {{PYTEST}} --no-cov {{ARGS}}
-## Tests: Run pytest with coverage
-#coverage:
-#    {{PYTEST}} --junitxml=junit.xml --cov-report=xml --no-cov-on-fail --cov=src
-## Linting
-#lint:
-#    flake8 tests/ src/
+
+# Tests: Run pytest
+test *ARGS:
+    {{GRADLEW}} clean test --info {{ARGS}}
+# Tests: Run pytest with coverage
+coverage:
+    {{GRADLEW}} koverHtmlReport
+# Linting
+lint:
+    {{GRADLEW}} lint
 
 # Replace DB_PASSWORD in env/dev.env with random password
 @set_db_password:

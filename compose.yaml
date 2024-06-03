@@ -1,6 +1,7 @@
 services:
   postgres:
     image: postgres:16
+    container_name: postgres
     hostname: postgres
     restart: always
     volumes:
@@ -12,8 +13,8 @@ services:
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}" ]
       interval: 10s
-      timeout: 3s
-      retries: 3
+      timeout: 5s
+      retries: 5
     ports:
       - "5432:5432"
 
@@ -38,28 +39,25 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile
+    container_name: streamy
     hostname: server
     depends_on:
       - postgres
+      - redis
     restart: always
     env_file:
       - ./env/dev.env
       - ./env/docker.env
       - ./env/app.env
-    entrypoint: /docker/scripts/django.sh
-    command: python manage.py runserver 0.0.0.0:8000
     ports:
       - "8080:8080"
     volumes:
-      - ./gradle:/app/gradle/
       - ./src:/app/src/
-      - ./gradlew:/app/gradlew:ro
     healthcheck:
       test: [ "CMD", "curl", "localhost:8000/health" ]
       interval: 120s
       timeout: 10s
       retries: 3
-
 
 volumes:
   cache:

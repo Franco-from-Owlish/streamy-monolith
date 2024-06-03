@@ -1,6 +1,7 @@
 # syntax=docker/dockerfile:1
 
 ################################################################################
+
 FROM eclipse-temurin:21-jdk-jammy AS build
 
 WORKDIR /app
@@ -15,13 +16,14 @@ COPY ./src src/
 # Build project
 RUN ./gradlew build -x test
 
-# Make life easy
+# Make life ea
 RUN export PROJECT=$(./gradlew properties -q | awk '/^name:/ {print $2}') \
     export VERSION=$(./gradlew properties -q | awk '/^version:/ {print $2}')
 RUN export JAR_FILE=${PROJECT}-${VERSION}.jar
 RUN mv build/libs/${JAR_FILE} app.jar
 
 ################################################################################
+
 FROM eclipse-temurin:21-jre-jammy AS final
 
 # Create a non-privileged user that the app will run under.

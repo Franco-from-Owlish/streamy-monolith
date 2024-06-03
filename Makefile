@@ -12,5 +12,10 @@ env/postgres.env:
 env/app.env:
 	cp env/app.sample.env $@
 
+build: env/dev.env env/app.env
+	./gradlew build -x test
+
 clean:
 	find ./env -type f -name "*.env" -not -name "*.sample.env" -delete
+	rm -r build
+	rm -r .gradle
